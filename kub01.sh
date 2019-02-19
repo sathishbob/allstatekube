@@ -32,6 +32,8 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 
+echo "exclude=kubeadm-1.1[2-9]* kubectl-1.1[2-9]* kubelet-1.1[2-9]*" >> /etc/yum.conf
+
 yum install -y kubelet kubeadm kubectl
 
 # Configurando hostname en todos los equipos y agregando las ip de los equipos en etc hosts con sus nombres
@@ -272,9 +274,9 @@ apiServerCertSANs:
 - kub03
 - kublb01.home
 - kublb01
-- master.itshellws-k8s.com
-- cluster.itshellws-k8s.com
-- elb.itshellws-k8s.com
+- master.allstatetraining-k8s.com
+- cluster.allstatetraining-k8s.com
+- elb.allstatetraining-k8s.com
 - 172.31.27.31
 - 172.31.41.254
 - 172.31.12.35 
@@ -294,7 +296,7 @@ pdsh -l centos -w "kub0[2-3]" "sudo /root/etcd.sh"
 
 systemctl daemon-reload && systemctl start etcd && systemctl restart etcd && systemctl status etcd && systemctl enable etcd
 
-kubeadm init --config ~/kubeadm-init.yaml
+kubeadm init --config ~/kubeadm-init.yaml --ignore-preflight-errors=ExternalEtcdVersion
 
 rm -rf .kube
 mkdir .kube
