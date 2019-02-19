@@ -14,3 +14,10 @@ Install command:
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+
+for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
+    systemctl restart $SERVICES
+    systemctl enable $SERVICES
+    systemctl status $SERVICES 
+done
