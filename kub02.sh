@@ -32,6 +32,8 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 
+echo "exclude=kubeadm-1.1[2-9]* kubectl-1.1[2-9]* kubelet-1.1[2-9]*" >> /etc/yum.conf
+
 yum install -y kubelet kubeadm kubectl
 
 hostname kub02
