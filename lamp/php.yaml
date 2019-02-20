@@ -3,11 +3,11 @@ kind: Deployment
 metadata:
   name: php-dbconnect
   labels:
-    "allstatetraining/example": lamp
+    zippyops.com/example: lamp
 spec:
   replicas: 3
   revisionHistoryLimit: 5
-  selectors:
+  selector:
     matchLabels:
       app: php-dbconnect
   template:
@@ -23,26 +23,27 @@ spec:
           requests:
             cpu: 100m
             memory: 1Gi
-      env:
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysql-credentials
-              key: user              
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-credentials
-              key: password
-        - name: MYSQL_HOST
-          value: mysql.default.svc.cluster.local
-      livenessProbe:
-        tcpSocket:
-          port: 80
-      ports:
-      - containerPort: 80
-              
+        env:
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: mysql-credentials
+                key: user
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-credentials
+                key: password
+          - name: MYSQL_HOST
+            value: mysql.default.svc.cluster.local
+        livenessProbe:
+          tcpSocket:
+            port: 80
+        ports:
+        - containerPort: 80
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -54,7 +55,5 @@ spec:
   - port: 80
     protocol: TCP
   selector:
-    app: php-dbconnect 
-  type: LoadBalancer    
-
-    
+    app: php-dbconnect
+  type: LoadBalancer
