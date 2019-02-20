@@ -11,22 +11,20 @@ spec:
       name: mysql-data-loader
     spec:
       containers:
-      - image: heptio/example-php-dbconnect
-        name: mysql-data-loader
-      env:
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysql-credentials
-              key: user              
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-credentials
-              key: password
-        - name: MYSQL_HOST
-          value: mysql.default.svc.cluster.local
-      command: ["/tmp/mysql-sakila-data-loader.sh"]
-    restartPolicy: OnFailure      
-      
-      
+      - name: mysql-data-loader       
+        image: heptio/example-php-dbconnect
+        env:
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: mysql-credentials
+                key: user
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-credentials
+                key: password
+          - name: MYSQL_HOST
+            value: mysql.default.svc.cluster.local
+        command: ["/tmp/mysql-sakila-data-loader.sh"]
+      restartPolicy: OnFailure
