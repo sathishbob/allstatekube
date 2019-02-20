@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database
+  labels:
+    "allstatetraining/example": lamp
+  annotations:
+    volume.alphs.kubernetes.io/storage-class: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+      
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    "allstatetraining/example": lamp
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selectors:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        resources:
+          requests:
+            cpu: 1
+            memory: 2Gi
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: rootpw
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: user              
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: password
+        - name: MYSQL_DATABASE
+          value: sakila
+      livenessProbe:
+        tcpSocket:
+          port: 3306
+      ports:
+      - containerPort: 3306
+      volumeMounts:
+      - mountPath: /var/lib/mysql
+        subPath: data
+        name: database
+    volumes:
+    - name: database
+      persistentVolumeClaim:
+        claimName: database      
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    "zippyops.com/example": lamp
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    protocol: TCP
+  selector:
+    app: mysql  
+
+    
